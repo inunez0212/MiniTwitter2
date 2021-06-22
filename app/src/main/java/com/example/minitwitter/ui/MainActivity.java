@@ -64,7 +64,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.buttonLogin :{
-                goLogin();
+              //  doLogin();
+                Intent intent = new Intent(MainActivity.this,
+                        DashboardActivity.class);
+                startActivity(intent);
                 break;
             }
             case R.id.textViewGoSignUp:{
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void goLogin() {
+    private void doLogin() {
         String email = this.email.getText().toString();
         String password = this.pass.getText().toString();
 
