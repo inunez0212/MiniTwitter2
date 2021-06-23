@@ -27,8 +27,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView textViewSignUp;
     EditText email;
     EditText pass;
-    MiniTwitterClient miniTwitterClient;
-    MiniTwitterService miniTwitterService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +34,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
-        this.retrofitInit();
         this.findIds();
         this.setEvents();
 
     }
 
-    private void retrofitInit() {
-        miniTwitterClient = MiniTwitterClient.getInstance();
-        miniTwitterService = miniTwitterClient.getMiniTwitterService();
-    }
 
     private void setEvents() {
         btnLogin.setOnClickListener(this);
@@ -64,10 +57,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.buttonLogin :{
-              //  doLogin();
-                Intent intent = new Intent(MainActivity.this,
-                        DashboardActivity.class);
-                startActivity(intent);
+                doLogin();
+               // Intent intent = new Intent(MainActivity.this,
+                  //      DashboardActivity.class);
+                //startActivity(intent);
                 break;
             }
             case R.id.textViewGoSignUp:{
@@ -90,7 +83,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             requestLogin.setEmail(email);
             requestLogin.setPassword(password);
 
-           Call<ResponseAuth> responseAuthCall = miniTwitterService.doLogin(requestLogin);
+           Call<ResponseAuth> responseAuthCall = MiniTwitterClient.getInstance()
+                   .getMiniTwitterService().doLogin(requestLogin);
 
            responseAuthCall.enqueue(new Callback<ResponseAuth>() {
                @Override
@@ -116,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                @Override
                public void onFailure(Call<ResponseAuth> call, Throwable t) {
-                   Toast.makeText(MainActivity.this, "Problemas en la conexión", Toast.LENGTH_SHORT);
+                   Toast.makeText(MainActivity.this, "Problemas en la conexión", Toast.LENGTH_SHORT).show();
                    Log.e("Error app",t.getMessage());
                }
            });

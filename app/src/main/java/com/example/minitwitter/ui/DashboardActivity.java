@@ -3,6 +3,7 @@ package com.example.minitwitter.ui;
 import android.os.Bundle;
 
 import com.example.minitwitter.R;
+import com.example.minitwitter.TweetListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,9 @@ public class DashboardActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
+        getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment,
+                new TweetListFragment()).commit();
     }
 
 }
