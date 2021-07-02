@@ -23,4 +23,14 @@
 
     <style name="Theme.MiniTwitter.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="FullSreenDialog" parent="Theme.AppCompat.Dialog" >
+        <item name="colorPrimary">@color/colorAzul</item>
+        <item name="colorPrimaryVariant">@color/colorAzulDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
 </resources>

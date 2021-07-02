@@ -43,33 +43,44 @@ public class MyTweetRecyclerViewAdapter extends RecyclerView.Adapter<MyTweetRecy
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.userName.setText(holder.mItem.getUser().getUsername());
-        holder.message.setText(holder.mItem.getMensaje());
-        holder.likeCount.setText(String.valueOf(holder.mItem.getLikes().size()));
-        if(!holder.mItem.getUser().getPhotoUrl().equals("")){
-            Glide.with(ctx).load("https://www.minitwitter.com/apiv1/uploads/photos/"+
-                    holder.mItem.getUser().getPhotoUrl())
-                    .into(holder.userImage);
-        }
+        if(mValues!=null){
+            holder.mItem = mValues.get(position);
+            holder.userName.setText(holder.mItem.getUser().getUsername());
+            holder.message.setText(holder.mItem.getMensaje());
+            holder.likeCount.setText(String.valueOf(holder.mItem.getLikes().size()));
+            if(!holder.mItem.getUser().getPhotoUrl().equals("")){
+                Glide.with(ctx).load("https://www.minitwitter.com/apiv1/uploads/photos/"+
+                        holder.mItem.getUser().getPhotoUrl())
+                        .into(holder.userImage);
+            }
 
-        for(Like like : holder.mItem.getLikes()){
-            if(like.getUsername().equals(this.userLogin)){
-                Glide.with(ctx).load(R.drawable.ic_baseline_favorite_pink)
-                        .into(holder.likeImage);
-                holder.likeCount.setTextColor(ctx.getResources().getColor(R.color.pink,
-                        ctx.getTheme()));
-                holder.likeCount.setTypeface(null, Typeface.BOLD);
+            for(Like like : holder.mItem.getLikes()){
+                if(like.getUsername().equals(this.userLogin)){
+                    Glide.with(ctx).load(R.drawable.ic_baseline_favorite_pink)
+                            .into(holder.likeImage);
+                    holder.likeCount.setTextColor(ctx.getResources().getColor(R.color.pink,
+                            ctx.getTheme()));
+                    holder.likeCount.setTypeface(null, Typeface.BOLD);
 
-                break;
+                    break;
+                }
+
             }
 
         }
     }
 
+    public void setData(List<Tweet> tweetList){
+        mValues = tweetList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return mValues.size();
+        if(mValues!=null){
+            return mValues.size();
+        }
+        return 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -88,8 +99,6 @@ public class MyTweetRecyclerViewAdapter extends RecyclerView.Adapter<MyTweetRecy
             likeImage = binding.imageViewLike;
             userImage = binding.imageViewAvatar;
         }
-
-
 
         @Override
         public String toString() {

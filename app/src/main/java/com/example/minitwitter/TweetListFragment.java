@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.minitwitter.data.TweetVieModel;
 import com.example.minitwitter.placeholder.PlaceholderContent;
 import com.example.minitwitter.response.Like;
 import com.example.minitwitter.response.Tweet;
@@ -38,7 +41,7 @@ public class TweetListFragment extends Fragment {
     RecyclerView recyclerView;
     MyTweetRecyclerViewAdapter adapter;
     private List<Tweet> listTweet;
-
+    private TweetVieModel tweetVieModel;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -59,7 +62,7 @@ public class TweetListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        tweetVieModel = new ViewModelProvider(this).get(TweetVieModel.class);
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
 
@@ -89,32 +92,15 @@ public class TweetListFragment extends Fragment {
     }
 
     private void loadAllTweets() {
-
-        Call<List<Tweet>> allTweetsCall = MiniTwitterClient.getInstance()
-                .getMiniTwitterServiceAuth().getAllTweets();
-
-        allTweetsCall.enqueue(new Callback<List<Tweet>>() {
+        adapter = new MyTweetRecyclerViewAdapter(getActivity(), listTweet);
+        recyclerView.setAdapter(adapter);
+        tweetVieModel.getLiveDataAllTweets().observe(getActivity(), new Observer<List<Tweet>>() {
             @Override
-            public void onResponse(Call<List<Tweet>> call, Response<List<Tweet>> response) {
-                if(response.isSuccessful()){
-                    listTweet = response.body();
-                    adapter = new MyTweetRecyclerViewAdapter(getActivity(), listTweet);
-                    recyclerView.setAdapter(adapter);
-                }else{
-                    Toast.makeText(getActivity(), "Algo ha ido mal al cargar los tweets",
-                            Toast.LENGTH_LONG).show();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Tweet>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error en llamada al WS",
-                        Toast.LENGTH_LONG).show();
+            public void onChanged(List<Tweet> tweets) {
+                listTweet = tweets;
+                adapter.setData(listTweet);
             }
         });
-
-
     }
 
 

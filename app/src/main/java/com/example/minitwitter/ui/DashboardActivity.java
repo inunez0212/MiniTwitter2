@@ -1,19 +1,24 @@
 package com.example.minitwitter.ui;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.minitwitter.R;
 import com.example.minitwitter.TweetListFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.DialogFragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class DashboardActivity extends AppCompatActivity {
+
+    FloatingActionButton floatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +26,8 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         getSupportActionBar().hide();
+
+        floatingActionButton = findViewById(R.id.fab);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -36,6 +43,16 @@ public class DashboardActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment,
                 new TweetListFragment()).commit();
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NuevoTweetDialogFragment nuevoTweetDialogFragment = new NuevoTweetDialogFragment();
+                nuevoTweetDialogFragment.show(getSupportFragmentManager(),
+                        "NuevoTweetDialogFragment");
+
+            }
+        });
     }
 
 }

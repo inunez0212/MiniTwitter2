@@ -1,5 +1,6 @@
 package com.example.minitwitter.retrofit;
 
+import com.example.minitwitter.request.RequestCreateTweet;
 import com.example.minitwitter.request.RequestLogin;
 import com.example.minitwitter.request.RequestSignUp;
 import com.example.minitwitter.response.ResponseAuth;
@@ -24,5 +25,7 @@ public interface MiniTwitterService {
     @GET("tweets/all")
     Call<List<Tweet>> getAllTweets();
 
+    @GET("tweets/create")
+    Call<List<Tweet>> createTweet(RequestCreateTweet tweet);
 
 }

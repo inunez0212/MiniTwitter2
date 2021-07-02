@@ -23,4 +23,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="Inicio">Inicio</string>
     <string name="CERO">0</string>
+    <string name="hintMensajeNuevo">Qué esta pasando?</string>
 </resources>
