@@ -1,6 +1,7 @@
-package com.example.minitwitter;
+package com.example.minitwitter.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,24 +10,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.example.minitwitter.data.TweetVieModel;
-import com.example.minitwitter.placeholder.PlaceholderContent;
-import com.example.minitwitter.response.Like;
+import com.example.minitwitter.R;
+import com.example.minitwitter.data.TweetViewModel;
 import com.example.minitwitter.response.Tweet;
-import com.example.minitwitter.retrofit.MiniTwitterClient;
-import com.example.minitwitter.retrofit.MiniTwitterService;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A fragment representing a list of Items.
@@ -41,7 +35,9 @@ public class TweetListFragment extends Fragment {
     RecyclerView recyclerView;
     MyTweetRecyclerViewAdapter adapter;
     private List<Tweet> listTweet;
-    private TweetVieModel tweetVieModel;
+    private TweetViewModel tweetVieModel;
+    SwipeRefreshLayout swipeRefreshLayout;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -62,11 +58,9 @@ public class TweetListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tweetVieModel = new ViewModelProvider(this).get(TweetVieModel.class);
+        tweetVieModel = new ViewModelProvider(requireActivity()).get(TweetViewModel.class);
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-
-
         }
     }
 
@@ -76,9 +70,19 @@ public class TweetListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tweet_list, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
+            recyclerView = view.findViewById(R.id.list);
+            swipeRefreshLayout = view.findViewById(R.id.swiperefReshLayout);
+            swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAzul,
+                    context.getTheme()));
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    swipeRefreshLayout.setRefreshing(true);
+                    loadAllTweets();
+
+                }
+            });
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -87,18 +91,34 @@ public class TweetListFragment extends Fragment {
 
 
             loadAllTweets();
-        }
         return view;
     }
 
     private void loadAllTweets() {
-        adapter = new MyTweetRecyclerViewAdapter(getActivity(), listTweet);
+        adapter = new MyTweetRecyclerViewAdapter(getActivity(), listTweet, requireActivity());
         recyclerView.setAdapter(adapter);
-        tweetVieModel.getLiveDataAllTweets().observe(getActivity(), new Observer<List<Tweet>>() {
+
+        tweetVieModel.getLiveDataAllTweets().observe(requireActivity(), new Observer<List<Tweet>>() {
             @Override
             public void onChanged(List<Tweet> tweets) {
                 listTweet = tweets;
                 adapter.setData(listTweet);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    private void loadNewAllTweets() {
+        adapter = new MyTweetRecyclerViewAdapter(getActivity(), listTweet, requireActivity());
+        recyclerView.setAdapter(adapter);
+
+        tweetVieModel.getNewLiveDataAllTweets().observe(requireActivity(), new Observer<List<Tweet>>() {
+            @Override
+            public void onChanged(List<Tweet> tweets) {
+                listTweet = tweets;
+                adapter.setData(listTweet);
+                swipeRefreshLayout.setRefreshing(false);
+                tweetVieModel.getNewLiveDataAllTweets().removeObserver(this);
             }
         });
     }

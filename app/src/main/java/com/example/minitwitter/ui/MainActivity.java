@@ -57,9 +57,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.buttonLogin :{
-               // doLogin();
-                Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
-                startActivity(intent);
+                doLogin();
+                //Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+                //startActivity(intent);
                 break;
             }
             case R.id.textViewGoSignUp:{

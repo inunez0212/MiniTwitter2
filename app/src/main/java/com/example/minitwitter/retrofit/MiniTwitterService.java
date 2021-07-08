@@ -12,6 +12,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface MiniTwitterService {
 
@@ -25,7 +26,10 @@ public interface MiniTwitterService {
     @GET("tweets/all")
     Call<List<Tweet>> getAllTweets();
 
-    @GET("tweets/create")
-    Call<List<Tweet>> createTweet(RequestCreateTweet tweet);
+    @POST("tweets/create")
+    Call<Tweet> createTweet(@Body RequestCreateTweet tweet);
+
+    @POST("tweets/like/{id}")
+    Call<Tweet> likeTweet(@Path("id") Integer id);
 
 }
