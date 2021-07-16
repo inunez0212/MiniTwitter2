@@ -5,8 +5,11 @@ import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.minitwitter.common.Constants;
 import com.example.minitwitter.common.MyApp;
+import com.example.minitwitter.common.SharedPreferencesManager;
 import com.example.minitwitter.request.RequestCreateTweet;
+import com.example.minitwitter.response.Like;
 import com.example.minitwitter.response.Tweet;
 import com.example.minitwitter.retrofit.MiniTwitterClient;
 
@@ -21,8 +24,15 @@ public class TweetRepository {
 
     MutableLiveData<List<Tweet>> liveDataAllTweets;
 
+    MutableLiveData<List<Tweet>> liveDataFavTweets;
+
+    String userName;
+
     TweetRepository(){
+
         liveDataAllTweets = getAllTweets();
+        userName = SharedPreferencesManager.getString(Constants.PREF_USER_LOGIN);
+
     }
 
     public MutableLiveData<List<Tweet>> getAllTweets(){
@@ -53,6 +63,26 @@ public class TweetRepository {
         return liveDataAllTweets;
     }
 
+    public MutableLiveData<List<Tweet>> getFavTweets(){
+
+        if(liveDataFavTweets ==null){
+            liveDataFavTweets = new MutableLiveData<>();
+        }
+        List<Tweet> newFavList = new ArrayList<>();
+        for(Tweet tweet : liveDataAllTweets.getValue()){
+            List<Like> likesList = tweet.getLikes();
+            for(Like like : likesList){
+                if(like.getUsername().equals(userName)){
+                    newFavList.add(tweet);
+                    break;
+                }
+            }
+        }
+        liveDataFavTweets.setValue(newFavList);
+        return  liveDataFavTweets;
+    }
+
+
     public void createTweet(String msg){
         RequestCreateTweet request = new RequestCreateTweet();
         request.setMensaje(msg);
@@ -72,6 +102,7 @@ public class TweetRepository {
                         }
                     }
                     liveDataAllTweets.setValue(listClone);
+                    getFavTweets();
                 } else {
                     showToastError("Algo ha ido mal al crear el tweet");
                 }
@@ -107,6 +138,7 @@ public class TweetRepository {
                         }
                     }
                     liveDataAllTweets.setValue(listClone);
+                    getFavTweets();
                 } else {
                     Log.e("likeTweet","Error click en like");
                     showToastError("Algo ha ido mal");

@@ -12,4 +12,11 @@ public class Constants {
     public static final String PREF_CREATED_LOGIN = "PREF_CREATED_LOGIN";
     public static final String PREF_ACTIVE_LOGIN = "PREF_ACTIVE_LOGIN";
 
+
+    public static final String TWEET_LIST_TYPE = "TWEET_LIST_TYPE";
+
+    public static final Integer TWEET_LIST_ALL = 1;
+
+    public static final Integer TWEET_LIST_FAVORITOS = 2;
+
 }

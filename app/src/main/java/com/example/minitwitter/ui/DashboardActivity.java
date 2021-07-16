@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -21,6 +22,32 @@ public class DashboardActivity extends AppCompatActivity {
 
     FloatingActionButton floatingActionButton;
     ImageView toolbarImageView;
+
+    private BottomNavigationView.OnNavigationItemSelectedListener onNavigationItemSelectedListener
+            =(item -> {
+        Fragment fragment = null;
+                switch (item.getItemId()){
+                    case R.id.navigation_home:
+                        fragment = TweetListFragment.newInstance(Constants.TWEET_LIST_ALL);
+                        floatingActionButton.show();
+                        break;
+                    case R.id.navigation_dashboard:
+                        fragment = TweetListFragment.newInstance(Constants.TWEET_LIST_FAVORITOS);
+                        floatingActionButton.hide();
+                        break;
+                    case R.id.navigation_notifications:
+                        floatingActionButton.hide();
+                        break;
+                }
+                if(fragment != null){
+                    getSupportFragmentManager().beginTransaction().
+                            replace(R.id.nav_host_fragment,
+                            fragment).commit();
+                    return true;
+                }
+
+        return false;
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +72,8 @@ public class DashboardActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         getSupportFragmentManager().beginTransaction().add(R.id.nav_host_fragment,
-                new TweetListFragment()).commit();
+                TweetListFragment.newInstance(Constants.TWEET_LIST_ALL)).commit();
+
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override

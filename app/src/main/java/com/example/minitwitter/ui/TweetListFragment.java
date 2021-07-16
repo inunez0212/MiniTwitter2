@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.minitwitter.R;
+import com.example.minitwitter.common.Constants;
 import com.example.minitwitter.data.TweetViewModel;
 import com.example.minitwitter.response.Tweet;
 
@@ -27,11 +28,7 @@ import java.util.List;
  */
 public class TweetListFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
-
+    private Integer tweetListType = Constants.TWEET_LIST_ALL;
     RecyclerView recyclerView;
     MyTweetRecyclerViewAdapter adapter;
     private List<Tweet> listTweet;
@@ -47,10 +44,11 @@ public class TweetListFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static TweetListFragment newInstance(int columnCount) {
+    public static TweetListFragment newInstance(Integer twwetListType) {
         TweetListFragment fragment = new TweetListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        //args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putInt(Constants.TWEET_LIST_TYPE, twwetListType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,7 +58,7 @@ public class TweetListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         tweetVieModel = new ViewModelProvider(requireActivity()).get(TweetViewModel.class);
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            tweetListType = getArguments().getInt(Constants.TWEET_LIST_TYPE);
         }
     }
 
@@ -79,19 +77,45 @@ public class TweetListFragment extends Fragment {
                 @Override
                 public void onRefresh() {
                     swipeRefreshLayout.setRefreshing(true);
-                    loadAllTweets();
-
+                    if(tweetListType==Constants.TWEET_LIST_FAVORITOS){
+                        loadNewFavTweets();
+                    }else{
+                        loadNewAllTweets();
+                    }
                 }
             });
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+            if(tweetListType==Constants.TWEET_LIST_FAVORITOS){
+                loadFavTweets();
+            }else{
+                loadAllTweets();
             }
 
-
-            loadAllTweets();
         return view;
+    }
+
+    private void loadNewFavTweets() {
+        tweetVieModel.getNewFavDataAllTweets().observe(requireActivity(), new Observer<List<Tweet>>() {
+            @Override
+            public void onChanged(List<Tweet> tweets) {
+                listTweet =tweets;
+                adapter.setData(listTweet);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    private void loadFavTweets() {
+        tweetVieModel.getLiveDataFavTweets().observe(requireActivity(), new Observer<List<Tweet>>() {
+            @Override
+            public void onChanged(List<Tweet> tweets) {
+                listTweet =tweets;
+                adapter.setData(listTweet);
+                swipeRefreshLayout.setRefreshing(false);
+                tweetVieModel.getNewLiveDataAllTweets().removeObserver(this);
+            }
+        });
     }
 
     private void loadAllTweets() {
@@ -103,7 +127,6 @@ public class TweetListFragment extends Fragment {
             public void onChanged(List<Tweet> tweets) {
                 listTweet = tweets;
                 adapter.setData(listTweet);
-                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
