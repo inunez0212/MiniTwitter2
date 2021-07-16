@@ -11,6 +11,7 @@ import com.example.minitwitter.common.SharedPreferencesManager;
 import com.example.minitwitter.request.RequestCreateTweet;
 import com.example.minitwitter.response.Like;
 import com.example.minitwitter.response.Tweet;
+import com.example.minitwitter.response.TweetDelete;
 import com.example.minitwitter.retrofit.MiniTwitterClient;
 
 import java.util.ArrayList;
@@ -147,6 +148,41 @@ public class TweetRepository {
 
             @Override
             public void onFailure(Call<Tweet> call, Throwable t) {
+                showToastError("Error en llamada al WS para crear ws");
+            }
+        });
+
+    }
+
+    public void deleteTweet(Integer idTweet){
+        Call<TweetDelete> callDelete = MiniTwitterClient.getInstance()
+                .getMiniTwitterServiceAuth().deleteTweet(idTweet);
+
+        callDelete.enqueue(new Callback<TweetDelete>() {
+            @Override
+            public void onResponse(Call<TweetDelete> call, Response<TweetDelete> response) {
+                if(response.isSuccessful()){
+                    List<Tweet> listClone = new ArrayList<>();
+                    if (liveDataAllTweets.getValue() != null) {
+                        for (Tweet tweet : liveDataAllTweets.getValue()) {
+                            if(!tweet.getId().equals(idTweet)) {
+                                listClone.add(new Tweet(tweet.getId(),
+                                        tweet.getMensaje(), tweet.getLikes(),
+                                        tweet.getUser()));
+                            }
+                        }
+                    }
+                    liveDataAllTweets.setValue(listClone);
+                    getFavTweets();
+                }else{
+                    Log.e("likeTweet","Error click en like");
+                    showToastError("Algo ha ido mal");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<TweetDelete> call, Throwable t) {
                 showToastError("Error en llamada al WS para crear ws");
             }
         });

@@ -5,11 +5,13 @@ import com.example.minitwitter.request.RequestLogin;
 import com.example.minitwitter.request.RequestSignUp;
 import com.example.minitwitter.response.ResponseAuth;
 import com.example.minitwitter.response.Tweet;
+import com.example.minitwitter.response.TweetDelete;
 
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -31,5 +33,8 @@ public interface MiniTwitterService {
 
     @POST("tweets/like/{id}")
     Call<Tweet> likeTweet(@Path("id") Integer id);
+
+    @DELETE("tweets/{id}")
+    Call<TweetDelete> deleteTweet(@Path("id") Integer id);
 
 }
